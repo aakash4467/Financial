@@ -1,17 +1,31 @@
-import { View, Text, Image, ScrollView, Animated } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Image, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRef, useState } from "react";
 import Investment from "@/src/components/ui/investment";
+import Animated, {
+  interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 
 export default function HomeScreen() {
-  const scrollA = useRef(new Animated.Value(0)).current;
+  const scrollY = useSharedValue(0);
   const [isClicked, setIsClicked] = useState(false);
 
-  // Interpolate height of the last view based on scroll position
-  const lastViewHeight = scrollA.interpolate({
-    inputRange: [0, 300], // Change 300 to adjust how fast it expands
-    outputRange: ["63%", "100%"], // From 63% height to full screen
-    extrapolate: "clamp", // Ensures values don’t exceed range
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    return {
+      zIndex: scrollY.value > 5 ? 2 : 0,
+    };
+  });
+
+  const handleScroll = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y;
+  });
+
+  const scrollAnimatedStyles = useAnimatedStyle(() => {
+    const translateY = interpolate(scrollY.value, [0, 400], [0, 0], "clamp");
+    return { transform: [{ translateY }] };
   });
 
   return (
@@ -20,18 +34,15 @@ export default function HomeScreen() {
       locations={[0, 0.11, 0.25, 0.5]}
       style={{ flex: 1 }}
     >
-      <Animated.ScrollView
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollA } } }],
-          { useNativeDriver: false } // Animated height cannot use native driver
-        )}
-        scrollEventThrottle={16}
+      {/* Background Investment Section */}
+      <View
+        style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 1 }}
       >
         {/* Header */}
         <View className="mt-[28px] ml-[16px] flex-row items-center justify-between">
           <View>
             <Text className="text-[15px]">Hi! How are you?</Text>
-            <Text className="text-[24px] font-semibold mt-[4px] ">
+            <Text className="text-[24px] font-semibold mt-[4px]">
               Rojina Bhandari
             </Text>
           </View>
@@ -41,32 +52,68 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Horizontal Scroll Section */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingVertical: 20, marginLeft: 8 }}
-        >
-          <View className="flex-row gap-x-1">
-            <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
-            <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
-            <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
-            <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
-          </View>
-        </ScrollView>
+        {/* Horizontal Investments (Prevent Interference with Vertical Scroll) */}
+        <View pointerEvents="box-none">
+          <ScrollView
+            horizontal
+            nestedScrollEnabled={true} // Allow vertical scrolling inside
+            showsHorizontalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingVertical: 20, marginLeft: 8 }}
+          >
+            <View className="flex-row gap-x-1">
+              <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
+              <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
+              <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
+              <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
+            </View>
+          </ScrollView>
+        </View>
+      </View>
 
-        {/* Last View that expands */}
+      {/* Main Vertical ScrollView */}
+      <Animated.ScrollView
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true} // Ensure smooth nested scrolling
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={{
+          flexGrow: 1, // Ensures content scrolls fully
+          paddingTop: 300, // Prevents overlap with the fixed header
+          paddingLeft: 8,
+          paddingRight: 8,
+        }}
+        style={[
+          animatedContainerStyle,
+          {
+            flex: 1, // Takes full screen height
+            position: "relative",
+          },
+        ]}
+      >
         <Animated.View
-          style={{
-            backgroundColor: "white",
-            height: lastViewHeight,
-            marginHorizontal: 8,
-            borderRadius: 20,
-          }}
+          className="bg-white"
+          style={[
+            scrollAnimatedStyles,
+            {
+              flex: 1, // Takes full height
+              borderRadius: 20,
+              padding: 16,
+              paddingBottom: 40,
+              backgroundColor: "white",
+            },
+          ]}
         >
-          <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
-          <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
-          <Investment isClicked={isClicked} setIsClicked={setIsClicked} />
+          {/* Multiple Investments for Scrolling */}
+          {Array.from({ length: 10 }).map((_, index) => (
+            <Investment
+              key={index}
+              isClicked={isClicked}
+              setIsClicked={setIsClicked}
+            />
+          ))}
         </Animated.View>
       </Animated.ScrollView>
     </LinearGradient>
