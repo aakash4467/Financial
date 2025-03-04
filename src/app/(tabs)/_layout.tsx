@@ -23,7 +23,7 @@ export default function TabLayout() {
           transform: [{ translateX: 0.25 * 268 }], // Shift back by half the width
           width: 280, // Fixed width (or keep "70%")
           height: 60,
-          backgroundColor: colorScheme === "dark" ? "#222" : "#F2F2F2",
+          backgroundColor: "#fff",
           borderRadius: 30,
           elevation: 5,
           shadowColor: "#000",
