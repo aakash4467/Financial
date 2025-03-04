@@ -106,14 +106,7 @@ export default function HomeScreen() {
             },
           ]}
         >
-          {/* Multiple Investments for Scrolling */}
-          {Array.from({ length: 10 }).map((_, index) => (
-            <Investment
-              key={index}
-              isClicked={isClicked}
-              setIsClicked={setIsClicked}
-            />
-          ))}
+        <Budget />
         </Animated.View>
       </Animated.ScrollView>
     </LinearGradient>
