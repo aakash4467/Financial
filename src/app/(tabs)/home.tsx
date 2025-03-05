@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import Budget from "@/src/components/ui/Budget";
 import Investment from "@/src/components/ui/investment";
 import Animated, {
   interpolate,
@@ -106,6 +107,7 @@ export default function HomeScreen() {
             },
           ]}
         >
+          <Budget />
         </Animated.View>
       </Animated.ScrollView>
     </LinearGradient>
