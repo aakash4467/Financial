@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Investment from "@/src/components/ui/investment";
@@ -106,7 +106,6 @@ export default function HomeScreen() {
             },
           ]}
         >
-        <Budget />
         </Animated.View>
       </Animated.ScrollView>
     </LinearGradient>
