@@ -1,12 +1,17 @@
 import { Text, View } from "react-native";
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, Circle, Defs, Filter, FeGaussianBlur } from 'react-native-svg';
 import { pie, arc } from 'd3-shape';
 
 const PieChart = ({ data }) => {
   const pieGenerator = pie().value(d => d.value);
   
   return (
-    <Svg width={200} height={200} viewBox="-100 -100 200 200">
+    <Svg width={180} height={180} viewBox="-100 -100 200 200">
+       <Defs>
+        <Filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <FeGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur" />
+        </Filter>
+      </Defs>
       {pieGenerator(data).map((slice, index) => {
         const arcGenerator = arc()
           .innerRadius(70) // Inner radius for a donut chart effect
@@ -21,6 +26,15 @@ const PieChart = ({ data }) => {
           />
         );
       })}
+       <Circle cx="0" cy="0" r="57" fill="black" opacity="0.2" filter="url(#shadow)" />
+
+      {/* Inner Circle */}
+      <Circle cx="0" cy="0" r="55" fill="white"/>
+      <View className="absolute z-[-999] mt-[70px] ml-[56px]">
+      
+      <Text className=" text-[10px]">Monthly Budget</Text>
+      <Text className="text-[20px] ml-[-4px] font-extrabold">$10,000</Text>
+      </View>
     </Svg>
   );
 };
@@ -35,9 +49,6 @@ export default function () {
   ]
   return (
     <View>
-      <Text>
-        Chart
-      </Text>
  <PieChart data={data} />
     </View>
   )
