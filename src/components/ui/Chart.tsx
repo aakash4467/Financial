@@ -33,17 +33,16 @@ const PieChart = ({ data }) => {
 
             {/* Show price only for slices with value 60 or 40 */}
             {slice.data.value >= 40 && (
-              <SvgText
-                x={xOffset}
-                y={y}
-                fill="white"
-                fontSize="10"
-                fontWeight="bold"
-                textAnchor="middle"
-                transform={`rotate(${adjustedAngle}, ${x}, ${y})`}
-              >
-                {slice.data.price}
-              </SvgText>
+             <SvgText
+               x={x - Math.cos((slice.startAngle + slice.endAngle) / 1) * 45 } // Moves text left inside slice
+               y={y - Math.sin((slice.startAngle + slice.endAngle) / 2) * 15}  
+               fill="white"
+               fontSize="14" // Increase font size for better visibility
+               fontWeight="bold"
+               transform={`rotate(${adjustedAngle}, ${x-30}, ${y-10})`} // Rotate text along slice curvature
+            >
+              {slice.data.price}
+            </SvgText>          
             )}
           </G>
         );
